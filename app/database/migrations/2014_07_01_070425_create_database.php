@@ -16,6 +16,7 @@ class CreateDatabase extends Migration
         //CREATES SCHOOLS TABLE
         Schema::create('schools', function ($table) {
             // TODO: Add additional school fields? (URL, ...)
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name', 255);
             $table->string('opening', 5);
@@ -29,6 +30,7 @@ class CreateDatabase extends Migration
         Schema::create('users', function ($table) {
             // TODO: Make permissions an intermediate column, or remove it alltogether and base permissions solely off groups.
             // TODO: Permissions are at the moment null for all, are they even needed here?
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('email');
             $table->string('password');
@@ -58,6 +60,7 @@ class CreateDatabase extends Migration
 
         //CREATES GROUPS TABLE
         Schema::create('groups', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
             $table->text('permissions')->nullable();
@@ -75,6 +78,7 @@ class CreateDatabase extends Migration
 
         //CREATE USER GROUPS PIVOT TABLE
         Schema::create('users_groups', function ($table) {
+            $table->engine = 'InnoDB';
             $table->integer('user_id')->unsigned();
             $table->integer('group_id')->unsigned();
 
@@ -83,12 +87,12 @@ class CreateDatabase extends Migration
 
             // We'll need to ensure that MySQL uses the InnoDB engine to
             // support the indexes, other engines aren't affected.
-            $table->engine = 'InnoDB';
             $table->primary(['user_id', 'group_id']);
         });
 
         //CREATE THROTTLE TABLE
         Schema::create('throttle', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('user_id')->unsigned()->nullable();
             $table->string('ip_address')->nullable();
@@ -101,12 +105,12 @@ class CreateDatabase extends Migration
 
             // We'll need to ensure that MySQL uses the InnoDB engine to
             // support the indexes, other engines aren't affected.
-            $table->engine = 'InnoDB';
             $table->index('user_id');
         });
 
         //CREATES APPOINTMENTS TABLE
         Schema::create('parent_appointments', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('title');
             $table->text('description');
@@ -123,6 +127,7 @@ class CreateDatabase extends Migration
 
         //CREATES APPOINTMENTS TABLE
         Schema::create('appointments', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('title');
             $table->text('description');
