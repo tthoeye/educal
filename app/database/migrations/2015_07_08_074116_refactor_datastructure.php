@@ -57,7 +57,7 @@ class RefactorDatastructure extends Migration
 
             //Defines the school a user belongs to
             $table->integer('school_id')->unsigned()->nullable();
-            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
+//            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
 
             // We'll need to ensure that MySQL uses the InnoDB engine to
             // support the indexes, other engines aren't affected.
