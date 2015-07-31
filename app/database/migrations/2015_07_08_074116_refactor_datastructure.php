@@ -25,7 +25,7 @@ class RefactorDatastructure extends Migration
         //CREATES SCHOOLS TABLE
         Schema::create('schools', function ($table) {
             // TODO: Add additional school fields? (URL, ...)
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->string('name', 255);
             $table->string('opening', 5);
             $table->string('city');
@@ -38,7 +38,7 @@ class RefactorDatastructure extends Migration
         Schema::create('users', function ($table) {
             // TODO: Make permissions an intermediate column, or remove it alltogether and base permissions solely off groups.
             // TODO: Permissions are at the moment null for all, are they even needed here?
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->string('email');
             $table->string('password');
             $table->string('lang', 5)->nullable();
@@ -67,7 +67,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES GROUPS TABLE
         Schema::create('roles', function ($table) {
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->string('name')->unique();
             $table->text('permissions')->nullable();
             $table->timestamps();
@@ -79,7 +79,7 @@ class RefactorDatastructure extends Migration
         });
 
         Schema::create('calendars', function ($table) {
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->string('name');
             $table->text('description');
 
@@ -131,7 +131,7 @@ class RefactorDatastructure extends Migration
 
         //CREATE THROTTLE TABLE
         Schema::create('throttle', function ($table) {
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->integer('user_id')->unsigned()->nullable();
             $table->string('ip_address')->nullable();
             $table->integer('attempts')->default(0);
@@ -149,7 +149,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES APPOINTMENTS TABLE
         Schema::create('parent_appointments', function ($table) {
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->string('title');
             $table->text('description');
             $table->string('location');
@@ -165,7 +165,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES APPOINTMENTS TABLE
         Schema::create('appointments', function ($table) {
-            $table->increments('id');
+            $table->increments('id')->unsigned();
             $table->string('title');
             $table->text('description');
             $table->string('location');
