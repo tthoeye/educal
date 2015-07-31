@@ -2,7 +2,7 @@
 
 /**
  * Class SchoolController
- * This controller handles the CRUD of schools, and associated default groups that are generated alongside of a school.
+ * This controller handles the CRUD of schools, and associated default calendars that are generated alongside of a school.
  */
 class SchoolController extends \BaseController
 {
@@ -20,274 +20,274 @@ class SchoolController extends \BaseController
     {
         $user = Sentry::getUser();
         // If user is logged in, redirect to calendar index
-        if (Sentry::check()) {
-
-            // Check if user is a superAdmin (other users are not allowed on this page)
-            if ($user->hasAccess('school')) {
-                $schools = School::get();
-                return View::make('school.index')->with('schools', $schools);
-            } else {
-                // If no permissions, redirect the user to the calendar index page
-                return Redirect::route('calendar.index');
-            }
-        } else {
+        if (!Sentry::check()) {
             return Redirect::route('landing');
         }
+
+        // Check if user is a superAdmin (other users are not allowed on this page)
+        if ($user->hasAccess('superadmin')) {
+            $schools = School::get();
+
+            return View::make('school.index')->with('schools', $schools);
+        } else {
+            // If no permissions, redirect the user to the calendar index page
+            return Redirect::route('calendar.redirect');
+        }
+
     }
 
     /**
      * Store a newly created school in storage.
-     * Create default groups.
+     * Create default calendars.
      * Store new user (schooladmin) as well.
-     *
      * @return Response
      */
 
     // TODO: Get rid of short (reoccuring)
     public function store()
     {
-        // If user is logged in, redirect to calendar index
-        if (!Sentry::check()) {
+        // Validation rules for input fields
+        $validator = Validator::make(
+            [
+                'Voornaam' => Input::get('user-firstname'),
+                'Achternaam' => Input::get('user-lastname'),
+                'Schoolnaam' => Input::get('school-name'),
+                'E-mail adres' => Input::get('user-email'),
+                'Stad' => Input::get('school-city'),
+                'Wachtwoord' => Input::get('user-password'),
+                'Wachtwoord_confirmation' => Input::get('user-password-confirm'),
+            ],
+            [
+                'Voornaam' => 'required',
+                'Achternaam' => 'required',
+                'Schoolnaam' => 'required|unique:schools,name',
+                'Stad' => 'required',
+                'E-mail adres' => 'required|email|unique:users,email',
+                'Wachtwoord' => 'required|min:8|confirmed',
+            ]
+        );
 
-            // Validation rules for input fields
-            $validator = Validator::make(
-                [
-                    'per-name'              => Input::get('per-name'),
-                    'per-surname'           => Input::get('per-surname'),
-                    'name'                  => Input::get('sname'),
-                    'email'                 => Input::get('semail'),
-                    'city'                  => Input::get('city'),
-                    'password'              => Input::get('password'),
-                    'password_confirmation' => Input::get('password_confirmation'),
-                    'tos'                   => Input::get('tos'),
-                    'honey'                 => 'honeypot',
-                    'honey_time'            => 'required|honeytime:5'
-                ],
-                [
-                    'per-name'      => 'required',
-                    'per-surname'   => 'required',
-                    'name'          => 'required|unique:schools,name',
-                    'city'          => 'required',
-                    'email'         => 'required|email|unique:users,email',
-                    'password'      => 'required|min:8|confirmed',
-                    'tos'           => 'required'
-                ]
-            );
+        // If validator fails, go back and show errors
+        if ($validator->fails()) {
+            $validator->getMessageBag()->add('errorMessage',
+                'Je school kon niet geregistreerd worden. Corrigeer de aangegeven fouten en probeer opnieuw.');
 
-            // If validator fails, go back and show errors
-            if ($validator->fails()) {
-                $validator->getMessageBag()->add('schoolerror', 'Failed to make a school');
+            return Redirect::route('school.register')->withInput()
+                ->withErrors($validator);
 
-                return Redirect::route('landing')->withInput()
-                    ->withErrors($validator);
-
-            } else {
-                // If there are no errors, prepare a new School object to be inserted in the database
-                $school       = new School();
-                $nn           = self::clean(e(Input::get("sname")));
-                $school->name = $nn;
-                $school->city = e(Input::get("city"));
-                $school->save();
-
-                // Create the default groups "global" and "admin"
-                Sentry::createGroup(
-                    [
-                        'name'        => $school->name . '__' . $school->id,
-                        'permissions' => [
-                            'school'  => 0,
-                            'user'    => 0,
-                            'group'   => 0,
-                            'event'   => 1,
-                        ],
-                        'school_id'   => $school->id,
-                    ]
-                );
-
-                $group = Sentry::createGroup(
-                    [
-                        'name'        => 'Administratie__' . $school->id,
-                        'permissions' => [
-                            'school'  => 0,
-                            'admin'   => 1,
-                            'user'    => 1,
-                            'group'   => 1,
-                            'event'   => 1,
-                        ],
-                        'school_id'   => $school->id,
-                    ]
-                );
-
-                // Store the newly created user along with the school
-                $user = Sentry::createUser(
-                    [
-                        'email'     => e(Input::get("semail")),
-                        'password'  => Input::get("password"),
-                        'activated' => true,
-                        'school_id' => $school->id,
-                        'first_name'=> e(Input::get("per-name")),
-                        'last_name' => e(Input::get("per-surname")),
-                    ]
-                );
-
-                // Add the user to the admin group
-                $user->addGroup($group);
-
-                // Log the user in
-                Sentry::login($user, false);
-
-                return Redirect::route('calendar.index');
-            }
-        } else {
-            return Redirect::route('calendar.index');
         }
-    }
+        // If there are no errors, prepare a new School object to be inserted in the database
+        $school = new School();
+        $school->name = e(Input::get("school-name"));
+        $school->city = e(Input::get("school-city"));
+        $school->slug = preg_replace('/[^a-zA-Z0-9]/', '-', e(strtolower(Input::get("school-name"))));
+        $school->save();
 
+        // Create the default calendars "global" and "admin"
+        // TODO: create new "calendars" instead of the calendars
 
-    /**
-     * Display the specified school.
-     *
-     * @param  int $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        // If user is logged in, redirect to calendar index
-        if (Sentry::check()) {
-            $user = Sentry::getUser();
+        // Store the newly created user along with the school
+        $user = Sentry::createUser(
+            [
+                'email' => e(Input::get("user-email")),
+                'password' => Input::get("user-password"),
+                'activated' => true,
+                'school_id' => $school->id,
+                'first_name' => e(Input::get("user-firstname")),
+                'last_name' => e(Input::get("user-lastname")),
+            ]
+        );
 
-            // Check if user is a superAdmin (only he can see this page)
-            if ($user->hasAccess('school')) {
-                $school = School::find($id);
-                $school->load("groups");
-                return View::make('school.detail')->with('school', $school);
-            } else {
-                // If no permissions, redirect the user to the calendar index page
-                return Redirect::route('calendar.index');
-            }
-        } else {
-            return Redirect::route('landing');
-        }
+        // make sure the roles exist
+        UserController::checkCreateRoles();
+        // Find the role using the calendar id
+
+        $adminRole = Sentry::findGroupByName('admin');
+
+        // Assign the calendar to the user
+        $user->addGroup($adminRole);
+
+        $calendar = new Calendar();
+        $calendar->name = "global";
+        $calendar->description = "events for everyone";
+        $calendar->school_id = $school->id;
+
+        $calendar->save();
+
+        // link to global calendar
+        $user->calendars()->attach($calendar);
+
+        // Add the user to the admin calendar
+        // $user->addcalendar($calendar);
+
+        // Log the user in
+        Sentry::login($user, false);
+
+        return Redirect::route('calendar.redirect');
     }
 
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param  string $slug the slug of the school for which we want to show the dashboard
      * @return Response
      */
-    public function edit($id)
+    public function dashboard($slug)
     {
-        if (Sentry::check()) {
-
-            $user = Sentry::getUser();
-
-            // Check if user is superAdmin (only they can edit schools)
-            if ($user->hasAnyAccess(['school'])) {
-                $school = School::find($id);
-                return View::make('school.edit')->with('school', $school);
-            } else {
-                // If no permissions, redirect the user to the calendar index page
-                return Redirect::route('calendar.index');
-            }
-        } else {
-            return Redirect::route('landing');
+        if (!Sentry::check()) {
+            return Redirect::route('landing')->withErrors("Je moet ingelogd zijn om van deze functie gebruikt te maken!");
         }
-    }
 
+        $user = Sentry::getUser();
+        $school = SchoolController::getSchoolBySlug($slug);
+
+        // Check if user is superAdmin (only they can edit schools)
+        if ($user->hasAccess('admin') && $school->id == $user->school_id) {
+            return View::make('admin.dashboard')->with('org', $school);
+        } else {
+            // If no permissions, redirect the user to the calendar index page
+            return Redirect::route('calendar.redirect')->withErrors("Je moet ingelogd zijn om van deze functie gebruikt te maken!");
+        }
+
+    }
 
     /**
      * Update the specified school in storage.
      *
-     * @param  int $id
+     * @param  string $slug the slug of the school to update
      * @return Response
      */
-    public function update($id)
+    public function updateSchoolBySlug($slug)
     {
-        if (Sentry::check()) {
-
-            $user = Sentry::getUser();
-
-            // Check if user is superAdmin (only they can update schools)
-            if ($user->hasAccess('school')) {
-                $school = School::find($id);
-
-                $validator = Validator::make(
-                    [
-                        'name'     => e(Input::get('name')),
-                        'city'     => e(Input::get('city')),
-                    ],
-                    [
-                        'name'     => 'required',
-                        'city'     => 'required',
-                    ]
-                );
-
-                // If validator fails, go back and show errors
-                if ($validator->fails()) {
-                    return Redirect::route('school.edit', $id)
-                        ->withInput()
-                        ->withErrors($validator);
-                } else {
-                    // Clean up inputted school name
-                    $nn = self::clean(Input::get("name"));
-                    // Select the first group of the school, if school name changes (should be the global group)
-                    if($nn != $school->name) {
-                        $gg = $school->groups->first();
-
-                        $gg->name = $nn . '__' . $school->id;
-                        $gg->save();
-                    }
-
-                    $school->name    = $nn;
-                    $school->city    = e(Input::get("city"));
-                    $school->opening = e(Input::get("opening"));
-                    $school->save();
-
-                    return Redirect::route('school.index');
-                }
-            } else {
-                // If no permissions, redirect the user to the calendar index page
-                return Redirect::route('calendar.index');
-            }
-        } else {
-            return Redirect::route('landing');
-        }
+        $this->updateSchool(SchoolController::getSchoolBySlug($slug));
     }
-
 
     /**
-     * Remove the specified resource from storage.
+     * Update the specified school in storage.
      *
-     * @param  int $id
+     * @param  int $id the Id of the school to update
      * @return Response
      */
-
-    // TODO: Authenticate in route?
-    public function destroy($id)
+    public function updateSchoolById($id)
     {
-        if (Sentry::check()) {
+        $this->updateSchool(School::find($id));
+    }
 
-            $user = Sentry::getUser();
-
-            // Check if user is superAdmin (only they can remove schools)
-            if ($user->hasAccess('school')) {
-                $school = School::find($id);
-                $school->delete();
-
-                return Redirect::route('school.index');
-
-            } else {
-                // If no permissions, redirect the user to the calendar index page
-                return Redirect::route('calendar.index');
-            }
-        } else {
+    /**
+     * Update the specified school in storage.
+     *
+     * @param  School $school the school to update
+     * @return Response
+     */
+    public function updateSchool($school)
+    {
+        if (!Sentry::check()) {
             return Redirect::route('landing');
         }
+
+        $user = Sentry::getUser();
+
+        // Check if user is superAdmin (only they can update schools)
+        if (!$user->hasAccess('admin') || $user->school_id != $school->id) { // If no permissions, redirect the user to the calendar index page
+            return Redirect::route('calendar.redirect');
+        }
+
+        if (Input::has("name")) {
+            $school->name = e(Input::get("name"));
+        }
+        if (Input::has("city")) {
+            $school->city = e(Input::get("city"));
+        }
+        if (Input::has("opening")) {
+            $school->opening = e(Input::get("opening"));
+        }
+        $school->save();
+
+        return Redirect::route('school.index');
+
+
     }
 
-    function clean($string) {
-        return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+    /**
+     * Remove the specified school from storage.
+     *
+     * @param  string $slug the school slug
+     * @return Response
+     */
+    public function destroySchoolBySlug($slug)
+    {
+        $this->destroySchool(SchoolController::getSchoolBySlug($slug));
     }
 
+    /**
+     * Remove the specified school from storage.
+     *
+     * @param  int $id the school ID
+     * @return Response
+     */
+    public function destroySchoolById($id)
+    {
+        $this->destroySchool(School::find($id));
+    }
+
+    // TODO: Authenticate in route?
+    /**
+     * Destroy a school after checking for permissions
+     * @param $school \School the school to destroy
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroySchool($school)
+    {
+        if (!Sentry::check()) {
+            return Redirect::route('landing');
+        }
+
+        $user = Sentry::getUser();
+
+        // Check if user is superAdmin (only they can remove schools)
+        if (!$user->hasAccess('superadmin')) {
+            // If no permissions, redirect the user to the calendar index page
+            return Redirect::route('calendar.redirect');
+        }
+
+        $school->delete();
+
+        return Redirect::route('school.index');
+    }
+
+    /**
+     * Get all admins for a school
+     * @param $school_id int the ID of the school
+     * @return array the admins
+     */
+    public static function getSchoolAdmins($school_id)
+    {
+        $adminrole = Sentry::findGroupByName('admin'); // all admins
+        $users = Sentry::findAllUsersInGroup($adminrole);
+
+        // we got all admins, but we only need the admins for this school
+        $filtered = array();
+        foreach ($users as $usr) {
+            if ($users->school_id == $school_id) {
+                array_push($filtered, $usr);
+            }
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * @param $school_slug
+     * @return \School |static
+     */
+    public static function getSchoolBySlug($school_slug)
+    {
+        return School::where('slug', $school_slug)->firstOrFail();
+    }
+
+    public static function showRegisterForm()
+    {
+        return View::make('user.register');
+    }
 }
