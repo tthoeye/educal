@@ -24,6 +24,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES SCHOOLS TABLE
         Schema::create('schools', function ($table) {
+            $table->engine = 'InnoDB';
             // TODO: Add additional school fields? (URL, ...)
             $table->increments('id')->unsigned();
             $table->string('name', 255);
@@ -36,6 +37,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES USERS TABLE
         Schema::create('users', function ($table) {
+            $table->engine = 'InnoDB';
             // TODO: Make permissions an intermediate column, or remove it alltogether and base permissions solely off groups.
             // TODO: Permissions are at the moment null for all, are they even needed here?
             $table->increments('id')->unsigned();
@@ -67,6 +69,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES GROUPS TABLE
         Schema::create('roles', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->string('name')->unique();
             $table->text('permissions')->nullable();
@@ -79,6 +82,7 @@ class RefactorDatastructure extends Migration
         });
 
         Schema::create('calendars', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->string('name');
             $table->text('description');
@@ -101,6 +105,7 @@ class RefactorDatastructure extends Migration
 
         //CREATE USER ROLES PIVOT TABLE
         Schema::create('users_roles', function ($table) {
+            $table->engine = 'InnoDB';
             $table->integer('user_id')->unsigned();
             $table->integer('role_id')->unsigned();
 
@@ -116,6 +121,7 @@ class RefactorDatastructure extends Migration
 
         //CREATE USER CALENDARS PIVOT TABLE
         Schema::create('users_calendars', function ($table) {
+            $table->engine = 'InnoDB';
             $table->integer('user_id')->unsigned();
             $table->integer('calendar_id')->unsigned();
 
@@ -131,6 +137,7 @@ class RefactorDatastructure extends Migration
 
         //CREATE THROTTLE TABLE
         Schema::create('throttle', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->integer('user_id')->unsigned()->nullable();
             $table->string('ip_address')->nullable();
@@ -143,12 +150,12 @@ class RefactorDatastructure extends Migration
 
             // We'll need to ensure that MySQL uses the InnoDB engine to
             // support the indexes, other engines aren't affected.
-            $table->engine = 'InnoDB';
             $table->index('user_id');
         });
 
         //CREATES APPOINTMENTS TABLE
         Schema::create('parent_appointments', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->string('title');
             $table->text('description');
@@ -165,6 +172,7 @@ class RefactorDatastructure extends Migration
 
         //CREATES APPOINTMENTS TABLE
         Schema::create('appointments', function ($table) {
+            $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->string('title');
             $table->text('description');
