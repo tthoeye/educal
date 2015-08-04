@@ -9,19 +9,6 @@
         <div class="faq-category">Kalender</div>
 
         <article class="faq-question">
-            <div class="faq-question-header"><span>Hoe voeg ik een gebeurtenis toe?</span><span
-                        class="faq-question-icon">▶</span></div>
-            <div class="faq-question-content" style="display:none"><p>
-                    Om een event toe te voegen kan je in het vakje klikken van de dag waar je het event wilt aanmaken.
-                    Je kan ook rechtsboven klikken op de knop "Voeg event toe".
-                </p>
-
-                <p>
-                    Hierna vul je alle gegevens in in de popup, en klik je op opslaan. Het evenement is nu zichtbaar
-                    voor iedereen.
-                </p></div>
-        </article>
-        <article class="faq-question">
             <div class="faq-question-header"><span>Hoe bekijk ik een event?</span><span
                         class="faq-question-icon">▶</span></div>
             <div class="faq-question-content" style="display:none"><p>
@@ -61,7 +48,7 @@
 
                     Alleen medewerkers kunnen activiteiten toevoegen. Je klikt simpelweg op de dag waarop je een
                     activiteit wilt
-                    toevoegen, of je klikt op de knop ‘evenement aanmaken’ rechtsboven, en voegt dan de datum in.
+                    toevoegen, of je klikt op de knop ‘voeg event toe’ rechtsboven en voegt dan de datum in.
 
                 </p></div>
         </article>
