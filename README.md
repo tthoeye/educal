@@ -1,4 +1,4 @@
-code9000
+educal
 ========
 
 educal is an application for schools to easily create and manage calendars that can be shared with parents.
@@ -58,6 +58,10 @@ If your development environment is not on a '.dev' domain, you will have to chan
 
 And change '\*.dev' to your computer name or simply '\*'
 
+## Server configuration
+Server configuration is identical to the default laravel 4.2 server configuration.
+See: http://laravel.com/docs/4.2#pretty-urls
+
 ## Nginx example configuration
 Example of nginx configuration for the site:
 
@@ -86,6 +90,7 @@ Example of nginx configuration for the site:
 A school needs to be created by filling out the register form. Both a school and first user will be created.
 This first user is an admin of the school and can add more users from the dashboard.
 If you want to add an account, without adding a school, the user needs to be added from an existing school's dashboard.
+Upon adding a user from a school's dashboard, an email will be sent to the new user, asking to setup a password.
 
 ## Login
 Login by clicking on login. Depending on the role of the currently logged in user you can perform certain actions
