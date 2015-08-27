@@ -24,7 +24,7 @@
                 <th>Naam</th>
                 <th>Beschrijving</th>
                 <th width="10em">parent</th>
-                <th>Meer</th>
+                <th>Actie</th>
             </tr>
             </thead>
             <tbody>
@@ -54,7 +54,7 @@
                 <td class="td-inp"><label><select ng-options="a.id as a.name for a in cals"
                                                   ng-model="cal.parent_id" ng-blur="save(c, cal)"
                                                   ng-change="cal.dirty=1"></select></label></td>
-                <td class="td-btn" ng-click="open(cal)">Bekijken</td>
+                <td class="td-btn" ng-click="deleteEntry(cal)">Verwijderen</td>
             </tr>
             </tbody>
         </table>
@@ -75,7 +75,7 @@
                     $interpolateProvider.startSymbol('[[').endSymbol(']]');
                 })
 
-                .controller('CalendarController', ['$scope', '$resource', '$http', '$timeout', function ($scope, $resource, $http, $timeout) {
+                .controller('CalendarController', ['$window', '$scope', '$resource', '$http', '$timeout', function ($window, $scope, $resource, $http, $timeout) {
 
                     // Resources
                     var Cals = $resource('{{ route('api.currentorg.calendars') }}');
@@ -103,10 +103,22 @@
                             cal.error = true;
                         });
                     };
+
+                    $scope.deleteEntry = function (cal) {
+                        if (!confirm('Ben je zeker dat je deze klas wilt verwijderen? Deze actie kan je niet ongedaan maken!')) {
+                            return;
+                        }
+                        $http.delete('{{route('api.calendar.handle')}}' + '/' + cal.id).success(function () {
+                            $window.location.reload();
+                        });
+
+                    }
+
                 }]);
 
         window.addEventListener('submit', function (e) {
             e.preventDefault();
         });
+
     </script>
 @stop
