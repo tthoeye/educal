@@ -52,7 +52,8 @@
                 <td class="td-inp"><label><input type="text" ng-model="cal.description" ng-blur="save(c, cal)"
                                                  ng-change="cal.dirty=1"></label></td>
                 <td class="td-inp"><label><select ng-options="a.id as a.name for a in cals"
-                                                  ng-model="cal.parent_id"></select></label></td>
+                                                  ng-model="cal.parent_id" ng-blur="save(c, cal)"
+                                                  ng-change="cal.dirty=1"></select></label></td>
                 <td class="td-btn" ng-click="open(cal)">Bekijken</td>
             </tr>
             </tbody>
