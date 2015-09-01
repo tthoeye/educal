@@ -56,7 +56,7 @@ var calnav = (function() {
     var id = $label.data('cal');
     var activate = $target.is(":checked");
     var parent = calendars[calendars[id].parent_id];
-    if(!parent) return;
+
     console.log('change', id)
 
     // Apply to calendar
@@ -74,10 +74,12 @@ var calnav = (function() {
       $label.find('.checkbox').css('background', '');
     }
 
+      if (!parent) return;
+
     // Toggle year eventsource
     var activeSiblings = 0;
     for (var cal in calendars) {
-      if (calendars.hasOwnProperty(cal)) {
+        if (calendars.hasOwnProperty(cal)) {
         var c = calendars[cal];
         if (c.parent_id === calendars[id].parent_id && c.active)
           activeSiblings++;
