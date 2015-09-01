@@ -45,9 +45,10 @@ class CalendarViewController extends \BaseController
             $c->load("appointments");
         }
 
-        $calendars = Calendar::getSchoolCalendars($school->id);
-        foreach ($calendars as $c) {
+        $orgCalendars = Calendar::getSchoolCalendars($school->id);
+        foreach ($orgCalendars as $c) {
             $c->load("appointments");
+            $calendars[$c->id] = $c;
         }
 
         $userCalendars = [];
