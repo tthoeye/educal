@@ -211,6 +211,13 @@ Route::group(['prefix' => 'api/1'], function () {
         'as' => 'api.calendar.delete',
         'uses' => 'ApiController@destroyCalendar'
     ]);
+    /**
+     * Delete a calendar
+     */
+    Route::delete('/calendars/{id}', [
+        'as' => 'api.calendar.delete',
+        'uses' => 'ApiController@destroyCalendar'
+    ])->where('id', '[0-9]+');;
 
     /**
      * Check if user is logged in

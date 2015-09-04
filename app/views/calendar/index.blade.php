@@ -7,7 +7,7 @@
     <script type="text/javascript">
         var org = {{ $school }};
         var user = {{ $user }};
-        var root = {{ $root }};
+        var root = {{ $root[0] }};
         var calendars = {{ json_encode($calendars,JSON_NUMERIC_CHECK) }};
         var urls = {{ json_encode([
       'events' => route('api.event.handle')
@@ -18,27 +18,26 @@
 @section('nav')
     <section class="navcals">
 
-        @foreach($calendars as $cal)
-            @if(!$cal->id == $root->id)
-                <p>
-                    <button type="button" name="button">Alleen schoolkalender</button>
-                </p>
-            @elseif($cal->parent_id == $root->id)
-                <button class="level--1" type="button" data-cal="{{$cal->id}}">
-                    {{$cal->name}}
+        @foreach($root as $cal)
+            <label class="level--0" style="" data-color="{{$cal->color}}" data-cal="{{$cal->id}}">
+                <span class="checkbox"><input type="checkbox"></span>{{$cal->name}}
+            </label>
+            @foreach($cal->getChildren() as $cal1)
+                <button class="level--1" type="button" data-cal="{{$cal1->id}}">
+                    {{$cal1->name}}
                     <svg height="20" stroke="#ccc" width="16" viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg"
                          fill="none" stroke-width="2" stroke-linecap="round">
                         <path d="M1 7 L8 14 L15 7"></path>
                     </svg>
                 </button>
-            @else
-                <label class="level--0" style="display:none;" data-color="{{$cal->color}}" data-cal="{{$cal->id}}"
-                       data-parent="{{$cal->parent_id}}">
-                    <span class="checkbox"><input type="checkbox"></span>{{$cal->name}}
+                @foreach($cal1->getChildren() as $cal2)
+                    <label class="level--0" style="display:none;" data-color="{{$cal2->color}}" data-cal="{{$cal2->id}}"
+                           data-parent="{{$cal1->id}}">
+                        <span class="checkbox"><input type="checkbox"></span>{{$cal2->name}}
                 </label>
-            @endif
+                @endforeach
+            @endforeach
         @endforeach
-
     </section>
 @stop
 

@@ -38,15 +38,17 @@ class CalendarViewController extends \BaseController
                 $admin = true;
             }
         }
-        $calendars = [];
-        $orgCalendars = Calendar::where('school_id', $school->id)->get();
+
+        $root = Calendar::getRootCalendars($school->id);
         // Loop through calendars to get all appointments
-        foreach ($orgCalendars as $calendar) {
-            $calendar->load("appointments");
-            $calendars[$calendar->id] = $calendar;
-            if (!$calendar->parent_id) {
-                $root = $calendar;
-            }
+        foreach ($root as $c) {
+            $c->load("appointments");
+        }
+
+        $orgCalendars = Calendar::getSchoolCalendars($school->id);
+        foreach ($orgCalendars as $c) {
+            $c->load("appointments");
+            $calendars[$c->id] = $c;
         }
 
         $userCalendars = [];

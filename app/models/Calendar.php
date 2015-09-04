@@ -52,6 +52,11 @@ class Calendar extends Eloquent
         return $this->hasOne('Calendar', 'parent_id', 'id');
     }
 
+    public function getChildren()
+    {
+        return Calendar::where('parent_id', $this->id)->get();
+    }
+
     /**
      * Get the school with this slug
      * @param string $slug the slug to search
@@ -62,6 +67,25 @@ class Calendar extends Eloquent
         return Calendar::where('slug', $slug)->first();
     }
 
+    /**
+     * Get the root (topmost) calendars for a school
+     * @param $school_id
+     * @return $this
+     */
+    public static function getRootCalendars($school_id)
+    {
+        return Calendar::where('school_id', $school_id)->where('parent_id', null)->get();
+    }
+
+    /**
+     * Get the root (topmost) calendars for a school
+     * @param $school_id
+     * @return $this
+     */
+    public static function getSchoolCalendars($school_id)
+    {
+        return Calendar::where('school_id', $school_id)->get();
+    }
 
     public function getEditableAttribute()
     {
