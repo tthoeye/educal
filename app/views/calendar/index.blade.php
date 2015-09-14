@@ -149,5 +149,5 @@
     {{ HTML::script('js/editor.js') }}
     {{ HTML::script('js/calendar.js') }}
 
-    {{ HTML::script('js/app.js') }}
+    
 @stop
