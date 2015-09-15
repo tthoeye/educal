@@ -14,7 +14,7 @@
         unselectCancel: '.popover',
         firstDay: 1,
         timeFormat: 'H:mm',
-        eventSources: [root],
+        eventSources: false,
         eventClick: editor.open,
         eventDrop: editor.drop,
         eventResize: editor.drop,

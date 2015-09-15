@@ -14,8 +14,8 @@ var calnav = (function() {
       l.toggleClass('active', active);
 
       // Apply to calendar
-      $('#calendar').fullCalendar((active ? 'add' : 'remove') + 'EventSource', l.data('url'))
-    })
+      $('#calendar').fullCalendar((active ? 'add' : 'remove') + 'EventSource', l.data('url'));
+    });
 
     var label = document.createElement('label');
     var $label = $(label);
@@ -57,7 +57,6 @@ var calnav = (function() {
     var activate = $target.is(":checked");
     var parent = calendars[calendars[id].parent_id];
 
-    console.log('change', id)
 
     // Apply to calendar
     if (activate) {
@@ -99,6 +98,17 @@ var calnav = (function() {
 
     // Toggle visibility
     nav.find('input').on('change', change);
+    
+    
+    // Display current selection
+    $("input:checked").each(function() {
+      
+      var l = $(this).parent('span').parent('label');
+      var id = l.attr("data-cal");
+      var events = calendars[id].url;
+      // Apply to calendar
+      $('#calendar').fullCalendar('addEventSource', events);
+    });
 
   };
 
