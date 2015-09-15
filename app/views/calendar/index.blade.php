@@ -19,8 +19,8 @@
     <section class="navcals">
 
         @foreach($root as $cal)
-            <label class="level--0" style="" data-color="{{$cal->color}}" data-cal="{{$cal->id}}">
-                <span class="checkbox"><input type="checkbox"></span>{{$cal->name}}
+            <label class="level--0 active" style="" data-color="{{$cal->color}}" data-cal="{{$cal->id}}">
+                <span class="checkbox"><input type="checkbox" checked></span>{{$cal->name}}
             </label>
             @foreach($cal->getChildren() as $cal1)
                 <button class="level--1" type="button" data-cal="{{$cal1->id}}">
