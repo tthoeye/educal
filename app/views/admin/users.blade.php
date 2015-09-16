@@ -23,6 +23,7 @@
                 <th>Voornaam</th>
                 <th>Naam</th>
                 <th>Email</th>
+                <th>Verwijderen</th>
                 <th>Kalenders</th>
             </tr>
             </thead>
@@ -36,6 +37,7 @@
                                                  placeholder="Vul naam in"></label></td>
                 <td class="td-inp"><label><input type="email" ng-model="adduser.email" placeholder="Vul e-mailadres in"></label>
                 </td>
+                <td></td>
                 <td class="td-btn" ng-click="addnew(adduser)">Bewaren</td>
             </tr>
             <tr ng-repeat="(u, user) in users | filter:search"
@@ -50,7 +52,8 @@
                                                  ng-change="user.dirty=1"></label></td>
                 <td class="td-inp"><label><input type="email" ng-model="user.email" ng-blur="save(u, user)"
                                                  ng-change="user.dirty=1"></label></td>
-                <td ng-click="open(user)">Kalenders...</td>
+                <td class="td-btn" ng-click="deleteEntry(user)">Verwijderen</td>
+                <td class="td-btn" ng-click="open(user)">Kalenders...</td>
             </tr>
             </tbody>
         </table>
@@ -151,6 +154,16 @@
                             k++;
                         }
                         return false;
+                    }
+                    
+                    $scope.deleteEntry = function (user) {
+                        if (!confirm('Ben je zeker dat je deze medewerker wilt verwijderen? Deze actie kan je niet ongedaan maken!')) {
+                            return;
+                        }
+                        $http.delete('{{route('api.currentorg.users')}}/' + user.id).success(function () {
+                            window.location.reload();
+                        });
+
                     }
                 }]);
 

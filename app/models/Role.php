@@ -35,6 +35,6 @@ class Role extends Cartalyst\Sentry\Groups\Eloquent\Group
      */
     public function users()
     {
-        return $this->hasMany('User','users_roles','id','id');
+        return $this->belongsToMany('User','users_roles','role_id','user_id');
     }
 }

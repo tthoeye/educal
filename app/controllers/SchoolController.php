@@ -269,7 +269,7 @@ class SchoolController extends \BaseController
         // we got all admins, but we only need the admins for this school
         $filtered = array();
         foreach ($users as $usr) {
-            if ($users->school_id == $school_id) {
+            if ($usr->school_id == $school_id) {
                 array_push($filtered, $usr);
             }
         }

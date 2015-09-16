@@ -156,20 +156,22 @@ class UserApiController extends \BaseController
      */
     public function deleteUser($id)
     {
+        
         // If user is logged in, check for permissions
-        if (Sentry::check()) {
+        if (!Sentry::check()) {
             // If not logged in, redirect to the login screen
             return ApiController::createApiAccessError('You have to login first');
         }
 
         $user = Sentry::getUser();
-
+       
         // Permission check
         if (!$user->hasAnyAccess(['superadmin', 'admin'])) {
             // If no permissions, redirect to calendar index
             return ApiController::createApiAccessError('You do not have the right to perform this action');
+            
         }
-
+        
         try {
             // Find the user using the user id
             $selectedUser = Sentry::findUserById($id);
@@ -188,19 +190,23 @@ class UserApiController extends \BaseController
                 // Return to the previous page
                 return ApiController::createApiOk("User deleted");
 
-            } else {
-                // Get the school and find its admins
-                $school = School::find($selectedUser->school_id);
-                $users = SchoolController::getSchoolAdmins($school->id);
+            } else if ($user->hasAccess('admin')) {   
+                if ($selectedUser->hasAccess('admin')) {
+                    // Get the school and find its admins
+                    $school = School::find($selectedUser->school_id);
+                    $users = SchoolController::getSchoolAdmins($school->id);
 
-                // If there is more than 1 admin in the school
-                if (count($users) > 1) {
-                    // Delete the user
-                    $selectedUser->delete();
+                    // If there is more than 1 admin in the school
+                    if (count($users) > 1) {
+                        // Delete the user
+                        $selectedUser->delete();
 
+                    } else {
+                        // If there is only 1 user (or less), then we can't delete the user
+                        return ApiController::createApiError("You can't remove the last admin of a school");
+                    }
                 } else {
-                    // If there is only 1 user (or less), then we can't delete the user
-                    return ApiController::createApiError("You can't remove the last admin of a school");
+                    $selectedUser->delete();
                 }
             }
         } catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
