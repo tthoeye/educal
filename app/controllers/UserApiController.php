@@ -72,8 +72,17 @@ class UserApiController extends \BaseController
         $user = Sentry::getUser();
 
         // Permission checks
-        if (!$user->hasAccess('superadmin') && !($user->hasAccess('admin') && $user->school_id == Input::get('school'))) {
-            return ApiController::createApiAccessError('You do not have the right to perform this action');
+        if (!$user->hasAccess('superadmin')) {
+            if ($user->hasAccess('admin')) {
+                // If a school is selected make sure its the right one
+                if (Input::get('school_id')) {
+                    if ($user->school_id != Input::get('school_id')) {
+                        return ApiController::createApiAccessError('You do not have the right to perform this action');
+                    }
+                }
+            } else {
+                return ApiController::createApiAccessError('You do not have the right to perform this action');
+            }
         }
 
         // Validate inputted data
