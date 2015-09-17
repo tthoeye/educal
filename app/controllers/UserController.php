@@ -261,22 +261,22 @@ class UserController extends \BaseController
         } // Error handling
         catch (Cartalyst\Sentry\Users\LoginRequiredException $e) {
             // No email input
-            $errorMessage = 'Login field is required.';
+            $errorMessage = 'Gebruikersnaam is verplicht.';
         } catch (Cartalyst\Sentry\Users\PasswordRequiredException $e) {
             // No password input
-            $errorMessage = 'Password field is required.';
+            $errorMessage = 'Wachtwoord is verplicht.';
         } catch (Cartalyst\Sentry\Users\WrongPasswordException $e) {
             // Wrong password input
-            $errorMessage = 'Wrong password. Try again.';
+            $errorMessage = 'Gebruikersnaam of wachtwoord onjuist.';
         } catch (Cartalyst\Sentry\Users\UserNotFoundException $e) {
-            $errorMessage = 'User was not found.';
+            $errorMessage = 'Gebruikersnaam of wachtwoord onjuist.';
         } catch (Cartalyst\Sentry\Users\UserNotActivatedException $e) {
-            $errorMessage = 'User is not activated.';
+            $errorMessage = 'Account is niet actief.';
         } // The following is only required if the throttling is enabled
         catch (Cartalyst\Sentry\Throttling\UserSuspendedException $e) {
-            $errorMessage = 'User is suspended.';
+            $errorMessage = 'Account is uitgeschakeld.';
         } catch (Cartalyst\Sentry\Throttling\UserBannedException $e) {
-            $errorMessage = 'User is banned.';
+            $errorMessage = 'Account is geblokkeerd.';
         }
 
         // If there is an errormessage, return to login page
