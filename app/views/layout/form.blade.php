@@ -56,6 +56,7 @@
             <li class="brand"><a class="nav brand" href="{{URL::to('/')}}"><img class="nav"
                                                                                 src="{{ asset('images/landing/logo_white.png') }}"
                                                                                 alt="educal"></a></li>
+            <li class=""><a class="nav" href="{{URL::to('/')}}">Startpagina</a></li>
             <li class="right"><a class="nav-login" href="{{ route('user.login') }}">Log
                     in</a></li>
         </ul>
