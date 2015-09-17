@@ -32,7 +32,7 @@
 
         <p>
             Op iOS importeer je de kalender via de instellingen van je toestel. Ga naar Agenda, Anders, en klik op "voeg
-            abbonement toe".
+            abonement toe".
         </p>
         <img src="{{ asset('images/export/stap1.png') }}" class="screenshot screenshot-stap">
         <img src="{{ asset('images/export/stap2.png') }}" class="screenshot screenshot-stap">

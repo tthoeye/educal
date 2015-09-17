@@ -24,6 +24,7 @@
     <div class="form-group">
         {{Form::label('school-name', 'Naam van school')}}
         {{Form::text('school-name', null , ['class'=>'form-control right', 'required' => true, 'placeholder' => 'Voer naam van school in'])}}
+        <span class="form-description"> De naam van je school zal ook het webadres (de URL) bepalen. Dit adres kan later niet meer gewijzigd worden.</span>
     </div>
     <div class="form-group">
         {{Form::label('user-email', 'E-mail adres')}}

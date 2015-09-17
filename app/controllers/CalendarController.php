@@ -78,7 +78,7 @@ class CalendarController extends \BaseController
 
             try {
                 if ($slug == 'all') {
-                    $appointments += Appointment::all();
+                    return Appointment::all();
                 }
                 $calendar = CalendarController::getCalendar($school_slug,
                     $slug);
