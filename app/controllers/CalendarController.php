@@ -78,7 +78,8 @@ class CalendarController extends \BaseController
 
             try {
                 if ($slug == 'all') {
-                    return Appointment::all();
+                    $school = School::getBySlug($slug);
+                    return Appointment::where('school_id', '=', $school->id);
                 }
                 $calendar = CalendarController::getCalendar($school_slug,
                     $slug);
