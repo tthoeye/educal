@@ -141,6 +141,7 @@ var editor = (function() {
     if (active.ev._id) {
       close();
       update(formdata);
+      active.ev.id = 0;
       return;
     }
 
@@ -148,6 +149,7 @@ var editor = (function() {
     api.postEvent(formdata).success(function(data) {
       close();
       $cal.fullCalendar('refetchEvents');
+      active.ev.id = 0;
     }).error(function(error) {
       console.log(error)
     });
