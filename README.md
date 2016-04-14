@@ -1,5 +1,5 @@
 educal
-========
+=========
 
 educal is an application for schools to easily create and manage calendars that can be shared with parents.
 
